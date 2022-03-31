@@ -38,8 +38,22 @@ class AccountImpl extends AccountService:
 
   private val accounts = mutable.Map[String, Double]()
 
-  def getAccountBalance(user: String): Double = accounts(user)
-  def addAccount(user: String, balance: Double = DEFAULT_ACCOUNT_VALUE): Unit = accounts(user) = ( balance < 0 ? DEFAULT_ACCOUNT_VALUE : 0)
-  def isAccountExisting(user: String): Boolean = ???
-  def purchase(user: String, amount: Double): Double = ???
+  def getAccountBalance(user: String): Double =
+    accounts(user)
+  end getAccountBalance
+
+  def addAccount(user: String, balance: Double = DEFAULT_ACCOUNT_VALUE): Unit =
+    accounts(user) =  if balance < 0 then DEFAULT_ACCOUNT_VALUE
+                                     else 0
+  end addAccount
+
+  def isAccountExisting(user: String): Boolean =
+    accounts.contains(user)
+  end isAccountExisting
+
+  def purchase(user: String, amount: Double): Double =
+    accounts(user) -= amount
+    accounts(user)
+  end purchase
+
 end AccountImpl
