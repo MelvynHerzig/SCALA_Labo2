@@ -27,7 +27,7 @@ class ProductImpl extends ProductService :
     "cailler" -> 2.0
   ))
 
-  private def doOperationForProduct(product: ProductName) : ProductInformations =
+  private def getProductInformations(product: ProductName) : ProductInformations =
     product match {
       case "croissant" => croissant
       case "bière" => beer
@@ -35,9 +35,11 @@ class ProductImpl extends ProductService :
 
   // TODO - Part 2 Step 2
   def getPrice(product: ProductName, brand: String): Double =
+    getProductInformations(product).getPrice(brand)
 
 
-  def getDefaultBrand(product: ProductName): BrandName = ???
+  def getDefaultBrand(product: ProductName): BrandName =
+    getProductInformations(product).getDefaultBrand
 end ProductImpl
 
 class ProductInformations(var defaultBrand: String, var prices: Map[String, Double]):
