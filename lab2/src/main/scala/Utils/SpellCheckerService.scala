@@ -11,6 +11,7 @@ trait SpellCheckerService:
 
   /**
     * Function that checks if the given string is a number not necessarily integer nor positive.
+    *
     * @param s String to check if it is a number
     * @return True if the string is a number else False.
     */
@@ -18,6 +19,7 @@ trait SpellCheckerService:
 
   /**
     * Function that checks if the given string is a pseudonym (i.e: it starts with an _ )
+    *
     * @param s
     * @return
     */
@@ -25,6 +27,7 @@ trait SpellCheckerService:
 
   /**
     * Calculate the Levenstein distance between two words.
+    *
     * @param s1 the first word
     * @param s2 the second word
     * @return an integer value, which indicates the Levenstein distance between "s1" and "s2"
@@ -34,6 +37,7 @@ trait SpellCheckerService:
   /**
     * Get the syntactically closest word in the dictionary from the given misspelled word, using the "stringDistance"
     * function. If the word is a number or a pseudonym, this function just returns it.
+    *
     * @param misspelledWord the mispelled word to correct
     * @return the closest normalized word from "mispelledWord"
     */
@@ -65,17 +69,18 @@ class SpellCheckerImpl(val dictionary: Map[String, String]) extends SpellChecker
     //    - On each iteration of the tail recursion, the value to compute is 1 + min(left cell, top-left cell, top cell)
     //    - The final distance = the value of the last computed cell.
 
-    val upperCache = 0.to(s2.length).toArray  // Correspond to the first row [0][0 : S2.length]
+    val upperCache = 0.to(s2.length).toArray // Correspond to the first row [0][0 : S2.length]
     // Slowly populated to represent next rows.
 
-    var leftCache = 1                         // Correspond to the left cell [1][0] of the first cell to compute
+    var leftCache = 1 // Correspond to the left cell [1][0] of the first cell to compute
     // Change at each iteration after being saved on the upper cache for the
     // next row.
 
-    var currentValue = -1                     // The value of the cell we are currently computing.
+    var currentValue = -1 // The value of the cell we are currently computing.
 
     /**
       * recursive function to compute Levenshtein's distance matrix
+      *
       * @param s1 Word whose letters represent rows.
       * @param s2 Word whose letters represent columns.
       * @param l1 from 0 to l1, part of word s1 that we comparing with 0 to l2 from word s2
@@ -83,7 +88,7 @@ class SpellCheckerImpl(val dictionary: Map[String, String]) extends SpellChecker
       * @return The Levenshtein's distance (bottom right cell of matrix)
       */
     @tailrec
-    def sd (s1: String, s2: String, l1: Int, l2: Int): Int =
+    def sd(s1: String, s2: String, l1: Int, l2: Int): Int =
 
       // When we work on the first letter of s2, the left cell value is always l1 + 1.
       if l2 == 0 then
@@ -104,12 +109,12 @@ class SpellCheckerImpl(val dictionary: Map[String, String]) extends SpellChecker
       upperCache(l2) = leftCache
       leftCache = currentValue
 
-      if l2 < s2.length - 1 then            // If last column is not reached, go to the next column.
+      if l2 < s2.length - 1 then // If last column is not reached, go to the next column.
         sd(s1, s2, l1, l2 + 1)
-      else if l1 < s1.length - 1 then       // If last row not reach, go to next row from column 0.
-        upperCache(l2+1) = currentValue
+      else if l1 < s1.length - 1 then // If last row not reach, go to next row from column 0.
+        upperCache(l2 + 1) = currentValue
         sd(s1, s2, l1 + 1, 0)
-      else                                  // The matrix is full, we return the final value.
+      else // The matrix is full, we return the final value.
         currentValue
     end sd
 
@@ -119,21 +124,32 @@ class SpellCheckerImpl(val dictionary: Map[String, String]) extends SpellChecker
 
   def getClosestWordInDictionary(misspelledWord: String): String =
 
-    // If the word is a number or pseudo return as it is.
-    if isNumber(misspelledWord) || isPseudonym(misspelledWord) then
-      return misspelledWord
+  // If the word is a number or pseudo return as it is.
+    if isNumber(misspelledWord) || isPseudonym(misspelledWord) then misspelledWord
+    else {
+      // Current best key found with his distance.
+      //      var bestKeyFound = ("", Int.MaxValue)
+      //
+      //      // For each kew in dictionary
+      //      for (k, v) <- dictionary do
+      //        val distance = stringDistance(k, misspelledWord) // Levenshtein's distance
+      //        if distance < bestKeyFound._2 then // If the distance is better than saved one
+      //          bestKeyFound = (k, distance) // Save the current key
+      //        else if distance == bestKeyFound._2 && k < bestKeyFound._1 then // If they are equal but the key is smaller than the saved one.
+      //          bestKeyFound = (k, distance) // Save the current key
 
-    // Current best key found with his distance.
-    var bestKeyFound = ("", Int.MaxValue)
+      dictionary(dictionary.foldLeft(("", Int.MaxValue))(( best, current ) =>
+      {
+        val distance = stringDistance(current._1, misspelledWord) // Levenshtein's distance
+        if distance < best._2 then // If the distance is better than saved one
+          (current._1, distance) // Save the current key
+        else if distance == best._2 && current._1 < best._1 then // If they are equal but the key is smaller than the saved one.
+          (current._1, distance) // Save the current key
+        else
+          (best._1, best._2)
+      })._1)
 
-    // For each kew in dictionary
-    for (k,v) <- dictionary do
-      val distance = stringDistance(k, misspelledWord)                    // Levenshtein's distance
-      if distance < bestKeyFound._2 then                                  // If the distance is better than saved one
-        bestKeyFound = (k, distance)                                      // Save the current key
-      else if distance == bestKeyFound._2 && k < bestKeyFound._1 then     // If they are equal but the key is smaller than the saved one.
-        bestKeyFound = (k, distance)                                      // Save the current key
 
-    dictionary(bestKeyFound._1)
+    }
 
 end SpellCheckerImpl

@@ -16,21 +16,22 @@ object ClinksCalculator:
     // Transformation into tail recursive function
     @tailrec
     def iter(x: Int, result: BigInt): BigInt =
-      if (x == 0 ) result
+      if x == 0 then result
       else iter(x - 1, result * x)
 
-    iter(n, 1)
+    if n < 0 then throw new Exception("Parameter should not be negative") else iter(n, 1)
   end factorial
 
 
   /**
     * Calculate the combination of two given numbers
+    * We changed the return type because factorial return a BigInt
     * @param n the first number
     * @param k the second number
     * @return n choose k
     */
   def calculateCombination(n: Int, k: Int): BigInt =
-    factorial(n) / (factorial(k) * factorial(n-k))
+    if k > n then 0 else factorial(n) / (factorial(k) * factorial(n-k))
   end calculateCombination
 
 end ClinksCalculator

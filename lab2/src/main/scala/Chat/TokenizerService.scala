@@ -63,12 +63,12 @@ class TokenizerService(spellCheckerSvc: SpellCheckerService):
 
     var tokens : Array[(String, Token)] = Array()
 
-    // For each word, get the corresponding word from dictionary and add the pair into the tokens array. 
-    for word <- words do
+    // For each word, get the corresponding word from dictionary and add the pair into the tokens array.
+    words.foreach(word => {
       val realWord : String = spellCheckerSvc.getClosestWordInDictionary(word)
       tokens = tokens :+ (realWord, getCorrespondingToken(realWord))
+    })
 
     TokenizedImpl(tokens)
   end tokenize
-
 end TokenizerService

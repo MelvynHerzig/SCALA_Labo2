@@ -27,7 +27,12 @@ class ProductImpl extends ProductService :
     "cailler" -> 2.0
   ))
 
-  private def getProductInformations(product: ProductName) : ProductInformations =
+  /**
+    *
+    * @param product
+    * @return
+    */
+  private def getProductInformations(product: ProductName): ProductInformations =
     product match {
       case "croissant" => croissant
       case "bière" => beer

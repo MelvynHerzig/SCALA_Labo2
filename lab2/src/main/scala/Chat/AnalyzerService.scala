@@ -11,7 +11,16 @@ class AnalyzerService(productSvc: ProductService,
     * @return the result of the computation
     */
   // TODO - Part 2 Step 3
-  def computePrice(t: ExprTree): Double = ???
+  def computePrice(t: ExprTree): Double = t match {
+    case Command(products) => computePrice(products)
+    case Price(exp) => computePrice(exp)
+    case Product(name, brand, quantity) => quantity * productSvc.getPrice(name, if brand == ""
+                                                                                then productSvc.getDefaultBrand(name)
+                                                                                else brand)
+    case And(leftExp, rightExp) => computePrice(leftExp) + computePrice(rightExp)
+    case Or(leftExp, rightExp) => Math.min(computePrice(leftExp), computePrice(rightExp))
+    case _ => 0
+  }
 
   /**
     * Return the output text of the current node, in order to write it in console.
@@ -25,4 +34,8 @@ class AnalyzerService(productSvc: ProductService,
       // Example cases
       case Thirsty() => "Eh bien, la chance est de votre côté, car nous offrons les meilleures bières de la région !"
       case Hungry() => "Pas de soucis, nous pouvons notamment vous offrir des croissants faits maisons !"
+
+      case Identification(pseudo) => s"Bonjour $pseudo !"
+      case Price(products) => s"Cela coûte CHF ${computePrice(products)}."
+
 end AnalyzerService
