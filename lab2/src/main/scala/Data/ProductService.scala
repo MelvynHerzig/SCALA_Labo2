@@ -35,7 +35,7 @@ class ProductImpl extends ProductService :
   private def getProductInformations(product: ProductName): ProductInformations =
     product match {
       case "croissant" => croissant
-      case "bière" => beer
+      case "biere" => beer
     }
 
   // TODO - Part 2 Step 2

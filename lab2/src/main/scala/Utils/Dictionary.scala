@@ -49,8 +49,8 @@ object Dictionary:
 
     "commander" -> "commander",
 
-    "connaitre" -> "connaître",
-    "connaître" -> "connaître",
+    "connaitre" -> "connaitre",
+    "connaître" -> "connaitre",
 
     "solde" -> "solde",
 

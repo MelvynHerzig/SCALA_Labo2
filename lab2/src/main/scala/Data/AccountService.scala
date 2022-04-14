@@ -34,17 +34,14 @@ trait AccountService:
 
 class AccountImpl extends AccountService:
 
-  private val DEFAULT_ACCOUNT_VALUE = 30
-
   private val accounts = mutable.Map[String, Double]()
 
   def getAccountBalance(user: String): Double =
     accounts(user)
   end getAccountBalance
 
-  def addAccount(user: String, balance: Double = DEFAULT_ACCOUNT_VALUE): Unit =
-    accounts(user) =  if balance < 0 then DEFAULT_ACCOUNT_VALUE
-                                     else 0
+  def addAccount(user: String, balance: Double): Unit =
+    accounts(user) =  balance
   end addAccount
 
   def isAccountExisting(user: String): Boolean =
