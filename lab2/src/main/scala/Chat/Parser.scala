@@ -43,7 +43,7 @@ class Parser(tokenized: Tokenized):
     if curToken == JE then
       readToken()
 
-      // "Commande", "Solde"
+      // "Commande", "Solde" begins with "Politesse"
       if curToken == VOULOIR then
         readToken()
         // "Commande"
@@ -57,12 +57,12 @@ class Parser(tokenized: Tokenized):
           eat(SOLDE)
           Balance()
         else expected(COMMANDER, CONNAITRE)
-      // "Identification"
+      // "Identification" with "me appelle"
       else if curToken == ME then
         readToken()
         eat(APPELER)
         parseName()
-      // "Identification", "EtatAme"
+      // "Identification" with "suis", "EtatAme"
       else if curToken == ETRE then
         readToken()
         if curToken == PSEUDO then
@@ -87,15 +87,22 @@ class Parser(tokenized: Tokenized):
         eat(PRIX)
         eat(DE)
       else expected(COMBIEN, QUEL)
-
+      
       Price(parseProducts())
+      
     end if
-
   end parsePhrases
 
+  /**
+    * Parse a series of products, maybe a single product.
+    * @return An expression tree with product(s) associated with AND/OR 
+    */
   private def parseProducts(): ExprTree =
+  
+    // First product
     val product = parseProduct()
 
+    // Associate other products
     def leftAssociativity(exprTree: ExprTree): ExprTree =
       if curToken == ET then
         readToken()
@@ -109,22 +116,28 @@ class Parser(tokenized: Tokenized):
     leftAssociativity(product)
   end parseProducts
 
-
+  /**
+    * Parse a single product.
+    * @return Return a product ExprTree.
+    */
   private def parseProduct(): ExprTree =
     var name = ""
     var quantity = 0
     var brand = ""
-
+    
+    // Getting quantity
     if curToken == NUM then
       quantity = Integer.parseInt(curValue)
       readToken()
     else expected(NUM)
 
+    // Getting product type
     if curToken == PRODUCT then
       name = curValue
       readToken()
     else expected(PRODUCT)
 
+    // Getting product brand (facultative)
     if curToken == MARQUE then
       brand = curValue
       readToken()
@@ -132,12 +145,16 @@ class Parser(tokenized: Tokenized):
     Product(name, brand, quantity)
   end parseProduct
 
+  /**
+    * Parse a identification name.
+    * @return Returns an identification ExprTree with the corresponding name.
+    */
   private def parseName() : ExprTree =
     if curToken == PSEUDO then
+      // Removing starting '_'
       Identification(curValue.substring(1))
     else expected(PSEUDO)
   end parseName
-
 end Parser
 
 

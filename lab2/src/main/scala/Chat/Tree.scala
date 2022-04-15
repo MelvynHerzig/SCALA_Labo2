@@ -1,6 +1,6 @@
 package Chat
 
-import Data.ProductInformations
+import Data.ProductInformation
 
 /**
   * This sealed trait represents a node of the tree.
