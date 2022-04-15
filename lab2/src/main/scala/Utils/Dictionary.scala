@@ -28,8 +28,7 @@ object Dictionary:
     "ou" -> "ou",
     "svp" -> "svp",
     "stp" -> "svp",
-
-    // TODO - Part 2 Step 1
+    
     "maison"->"maison",
     "home made"->"maison",
     "fait maison"->"maison",

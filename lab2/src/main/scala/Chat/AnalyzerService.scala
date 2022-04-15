@@ -34,7 +34,6 @@ class AnalyzerService(productSvc: ProductService,
     val user = session.getCurrentUser.getOrElse("")
 
     t match
-      // TODO - Part 2 Step 3
       // Example cases
       case Thirsty() => "Eh bien, la chance est de votre côté, car nous offrons les meilleures bières de la région !"
       case Hungry() => "Pas de soucis, nous pouvons notamment vous offrir des croissants faits maisons !"

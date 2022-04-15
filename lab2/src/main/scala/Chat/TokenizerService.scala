@@ -12,7 +12,7 @@ class TokenizerService(spellCheckerSvc: SpellCheckerService):
     * @return A value from Token enum.
     */
   def getCorrespondingToken(word: String): Token =
-    word match {
+    word match 
       case "bonjour" => Token.BONJOUR
       case "je" => Token.JE
       case "etre" => Token.ETRE
@@ -47,7 +47,6 @@ class TokenizerService(spellCheckerSvc: SpellCheckerService):
       case a if spellCheckerSvc.isPseudonym(a) => Token.PSEUDO
       case a if spellCheckerSvc.isNumber(a) => Token.NUM
       case _ => Token.UNKNOWN
-    }
   end getCorrespondingToken
 
   /**

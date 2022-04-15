@@ -160,7 +160,7 @@ class Parser(tokenized: Tokenized):
     */
   private def parseName(): ExprTree =
     if curToken == PSEUDO then
-    // Removing starting '_'
+      // Removing starting '_'
       Identification(curValue.substring(1))
     else expected(PSEUDO)
   end parseName
