@@ -118,8 +118,15 @@ class SpellCheckerImpl(val dictionary: Map[String, String]) extends SpellChecker
         currentValue
     end sd
 
-    // Start filling matrix from cell [1][1] (since we already know first row and first column)
-    sd(s1, s2, 0, 0)
+    // Filtering with match because sd doesn't handle "" string.
+    (s1, s2) match
+      case ("", "") => 0
+      case ("", s2) => s2.length
+      case (s1, "") => s1.length
+
+      // Start filling matrix from cell [1][1] (since we already know first row and first column)
+      case (s1, s2) => sd(s1, s2, 0, 0)
+
   end stringDistance
 
   def getClosestWordInDictionary(misspelledWord: String): String =
@@ -127,19 +134,8 @@ class SpellCheckerImpl(val dictionary: Map[String, String]) extends SpellChecker
   // If the word is a number or pseudo return as it is.
     if isNumber(misspelledWord) || isPseudonym(misspelledWord) then misspelledWord
     else {
-      // Current best key found with his distance.
-      //      var bestKeyFound = ("", Int.MaxValue)
-      //
-      //      // For each kew in dictionary
-      //      for (k, v) <- dictionary do
-      //        val distance = stringDistance(k, misspelledWord) // Levenshtein's distance
-      //        if distance < bestKeyFound._2 then // If the distance is better than saved one
-      //          bestKeyFound = (k, distance) // Save the current key
-      //        else if distance == bestKeyFound._2 && k < bestKeyFound._1 then // If they are equal but the key is smaller than the saved one.
-      //          bestKeyFound = (k, distance) // Save the current key
 
-      dictionary(dictionary.foldLeft(("", Int.MaxValue))(( best, current ) =>
-      {
+      dictionary(dictionary.foldLeft(("", Int.MaxValue))((best, current) => {
         val distance = stringDistance(current._1, misspelledWord) // Levenshtein's distance
         if distance < best._2 then // If the distance is better than saved one
           (current._1, distance) // Save the current key
@@ -148,7 +144,6 @@ class SpellCheckerImpl(val dictionary: Map[String, String]) extends SpellChecker
         else
           (best._1, best._2)
       })._1)
-
 
     }
 

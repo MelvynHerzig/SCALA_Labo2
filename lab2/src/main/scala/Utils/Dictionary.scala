@@ -46,6 +46,7 @@ object Dictionary:
 
     "mon" -> "mon",
     "me" -> "me",
+    "m" -> "me",
 
     "commander" -> "commander",
 

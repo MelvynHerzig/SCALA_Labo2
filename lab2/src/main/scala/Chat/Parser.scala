@@ -1,9 +1,11 @@
 package Chat
 
-class UnexpectedTokenException(msg: String) extends Exception(msg){}
+import scala.annotation.tailrec
 
-// TODO - step 4
+class UnexpectedTokenException(msg: String) extends Exception(msg) {}
+
 class Parser(tokenized: Tokenized):
+
   import ExprTree._
   import Chat.Token._
 
@@ -11,6 +13,7 @@ class Parser(tokenized: Tokenized):
   var curTuple: (String, Token) = tokenized.nextToken()
 
   def curValue: String = curTuple._1
+
   def curToken: Token = curTuple._2
 
   /** Reads the next token and assigns it into the global variable curTuple */
@@ -23,15 +26,16 @@ class Parser(tokenized: Tokenized):
       readToken()
       tmp
     else expected(token)
+  end eat
 
   /** Complains that what was found was not expected. The method accepts arbitrarily many arguments of type Token */
   private def expected(token: Token, more: Token*): Nothing =
     val expectedTokens = more.prepended(token).mkString(" or ")
     throw new UnexpectedTokenException(s"Expected: $expectedTokens, found: $curToken")
+  end expected
 
   /** the root method of the parser: parses an entry phrase */
-  // TODO - Part 2 Step 4
-  def parsePhrases() : ExprTree =
+  def parsePhrases(): ExprTree =
 
     // A phrase may begin with a "BONJOUR"
     if curToken == BONJOUR then readToken()
@@ -86,30 +90,33 @@ class Parser(tokenized: Tokenized):
         eat(LE)
         eat(PRIX)
         eat(DE)
-      else expected(COMBIEN, QUEL)
-      
+      else expected(BONJOUR, JE, COMBIEN, QUEL)
       Price(parseProducts())
       
-    end if
   end parsePhrases
 
   /**
     * Parse a series of products, maybe a single product.
-    * @return An expression tree with product(s) associated with AND/OR 
+    *
+    * @return An expression tree with product(s) associated with AND/OR
     */
   private def parseProducts(): ExprTree =
-  
+
     // First product
     val product = parseProduct()
 
     // Associate other products
+    // To make a right associativity transform: leftAssociativity(And(exprTree, parseProduct()))
+    //                                    into: And(exprTree, leftAssociativity(parseProduct()))
+    // Change it for AND and OR
+    @tailrec
     def leftAssociativity(exprTree: ExprTree): ExprTree =
       if curToken == ET then
         readToken()
-        leftAssociativity(And(parseProduct(), exprTree))
+        leftAssociativity(And(exprTree, parseProduct()))
       else if curToken == OU then
         readToken()
-        leftAssociativity(Or(parseProduct(), exprTree))
+        leftAssociativity(Or(exprTree, parseProduct()))
       else exprTree
     end leftAssociativity
 
@@ -118,13 +125,14 @@ class Parser(tokenized: Tokenized):
 
   /**
     * Parse a single product.
+    *
     * @return Return a product ExprTree.
     */
   private def parseProduct(): ExprTree =
     var name = ""
-    var quantity = 0
+    var quantity = 1
     var brand = ""
-    
+
     // Getting quantity
     if curToken == NUM then
       quantity = Integer.parseInt(curValue)
@@ -147,11 +155,12 @@ class Parser(tokenized: Tokenized):
 
   /**
     * Parse a identification name.
+    *
     * @return Returns an identification ExprTree with the corresponding name.
     */
-  private def parseName() : ExprTree =
+  private def parseName(): ExprTree =
     if curToken == PSEUDO then
-      // Removing starting '_'
+    // Removing starting '_'
       Identification(curValue.substring(1))
     else expected(PSEUDO)
   end parseName

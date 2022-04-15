@@ -8,6 +8,7 @@ import scala.annotation.tailrec
 object ClinksCalculator:
   /**
     * Calculate the factorial of a given number
+    *
     * @param n the number to compute
     * @return n!
     */
@@ -22,16 +23,16 @@ object ClinksCalculator:
     if n < 0 then throw new Exception("Parameter should not be negative") else iter(n, 1)
   end factorial
 
-
   /**
     * Calculate the combination of two given numbers
     * We changed the return type because factorial return a BigInt
+    *
     * @param n the first number
     * @param k the second number
     * @return n choose k
     */
   def calculateCombination(n: Int, k: Int): BigInt =
-    if k > n then 0 else factorial(n) / (factorial(k) * factorial(n-k))
+    if k > n then 0 else factorial(n) / (factorial(k) * factorial(n - k))
   end calculateCombination
 
 end ClinksCalculator

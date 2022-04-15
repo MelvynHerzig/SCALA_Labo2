@@ -1,5 +1,11 @@
 package Data
 
+/**
+  * Custom exception class used when an invalid brand is used for a given product.
+  *
+  * @param msg Message to be displayed.
+  */
+class InvalidBrandException(msg: String) extends Exception(msg) {}
 
 trait ProductService:
   /**
@@ -14,18 +20,21 @@ trait ProductService:
 
   /**
     * Gets the price of a given product.
+    *
     * @param product Product name.
-    * @param brand Brand name.
+    * @param brand   Brand name.
     * @return Returns the price of the product.
     */
   def getPrice(product: ProductName, brand: BrandName): Double
 
   /**
     * Gets the default brand of a given product.
+    *
     * @param product Product name.
     * @return Returns the default brand name of the product.
     */
   def getDefaultBrand(product: ProductName): BrandName
+
 end ProductService
 
 
@@ -53,21 +62,20 @@ class ProductImpl extends ProductService :
 
   /**
     * For a given product gets the information associated.
+    *
     * @param product Product name.
     * @return Returns the default brand and the map of price.
     */
   private def getProductInformations(product: ProductName): ProductInformation =
-    product match {
+    product match
       case "croissant" => croissant
       case "biere" => beer
       case _ => throw new IllegalArgumentException("Unknown product")
-    }
   end getProductInformations
 
-  // TODO - Part 2 Step 2
   def getPrice(product: ProductName, brand: String): Double =
     if brand == null then
-      throw new IllegalArgumentException("Brand cannot be null")
+      throw new IllegalArgumentException("Brand can not be null")
     else
       getProductInformations(product).getPrice(brand)
   end getPrice
@@ -80,10 +88,11 @@ end ProductImpl
 
 /**
   * Class in charge of storing product information.
+  *
   * @param defaultBrand Default brand name of the product.
-  * @param prices Default prices for each brand of the product.
+  * @param prices       Default prices for each brand of the product.
   */
-class ProductInformation(var defaultBrand: String, var prices: Map[String, Double]):
+class ProductInformation(val defaultBrand: String, val prices: Map[String, Double]):
 
   /**
     * Alias, a brand name is a String
@@ -91,14 +100,23 @@ class ProductInformation(var defaultBrand: String, var prices: Map[String, Doubl
   type BrandName = String
 
   /**
-    * Gets the price of the product for the given brand.
+    * Gets the price of the product for the given brand. If the brand is "", default brand is used.
+    *
     * @param brand Brand name.
     * @return Returns the price of the product for the given brand.
+    * @throws InvalidBrandException when the brand doesn't exist for the product.
     */
-  def getPrice(brand: BrandName): Double = prices(brand)
+  def getPrice(brand: BrandName): Double =
+    if brand.isEmpty then
+      prices(getDefaultBrand)
+    else if !prices.contains(brand) then
+      throw new InvalidBrandException("Invalid brand name for this product")
+    else prices(brand)
+  end getPrice
 
   /**
     * Gets the default brand of a product.
+    *
     * @return Returns the brand name.
     */
   def getDefaultBrand: BrandName = defaultBrand

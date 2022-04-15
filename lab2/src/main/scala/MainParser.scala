@@ -37,6 +37,9 @@ object MainParser:
             println(printResult)
           catch
             case e: UnexpectedTokenException => println(s"Invalid input. ${e.getMessage}")
+            
+            // We added a custom exception in case an invalid brand (for a given product) is asked by user.
+            case e: InvalidBrandException => println(s"Invalid brand. ${e.getMessage}")
     end while
   end main
 end MainParser

@@ -14,18 +14,14 @@ class AnalyzerService(productSvc: ProductService,
     *
     * @return the result of the computation
     */
-  // TODO - Part 2 Step 3
-  def computePrice(t: ExprTree): Double = t match {
+  def computePrice(t: ExprTree): Double = t match
     case Command(products) => computePrice(products)
     case Price(exp) => computePrice(exp)
-    case Product(name, brand, quantity) => quantity * productSvc.getPrice(name, if brand == ""
-    then productSvc.getDefaultBrand(name)
-    else brand)
+    case Product(name, brand, quantity) => quantity * productSvc.getPrice(name, brand)
     case And(leftExp, rightExp) => computePrice(leftExp) + computePrice(rightExp)
     case Or(leftExp, rightExp) => Math.min(computePrice(leftExp), computePrice(rightExp))
     case _ => 0
-  }
-
+  end computePrice
 
   /**
     * Return the output text of the current node, in order to write it in console.
@@ -51,9 +47,11 @@ class AnalyzerService(productSvc: ProductService,
       case Command(products) =>
         if accountSvc.isAccountExisting(user) then
           val price = computePrice(products)
-          if price > accountSvc.getAccountBalance(user) then "Le montant actuel de votre solde est insuffisant" else
+          if price > accountSvc.getAccountBalance(user) then
+            "Le montant actuel de votre solde est insuffisant"
+          else
             accountSvc.purchase(user, price)
-            s"Voici donc ${inner(products)} ! Cela coûte $price et votre nouveau solde est de "
+            s"Voici donc ${inner(products)} ! Cela coûte $price et votre nouveau solde est de ${accountSvc.getAccountBalance(user)}"
         else s"Veuillez d'abord vous identifier"
 
       case Balance() =>
@@ -65,8 +63,8 @@ class AnalyzerService(productSvc: ProductService,
 
       case Product(name, brand, quantity) => s"$quantity $name $brand"
 
-      case Or(lExp, rExp) => s"${inner(lExp)} ou ${inner(rExp)}"
+      case Or(lExp, rExp) => if computePrice(lExp) <= computePrice(rExp) then s"${inner(lExp)}" else s"${inner(rExp)}"
       case And(lExp, rExp) => s"${inner(lExp)} et ${inner(rExp)}"
-
+  end reply
 
 end AnalyzerService

@@ -8,14 +8,18 @@ enum Token:
   SVP,
   ASSOIFFE,
   AFFAME,
+
   // Actions
   ETRE,
   VOULOIR,
+
   // Logic Operators
   ET,
   OU,
+
   // Products
   PRODUCT,
+
   // Util
   PSEUDO,
   NUM,
